@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hw-nas-bench"
+version = "0.1.0"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hw_nas_bench_api*"]
