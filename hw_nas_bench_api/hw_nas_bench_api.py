@@ -9,6 +9,23 @@ class HWNASBenchAPI():
         with open(file_path_or_dict, 'rb') as f:
             self.HW_metrics = pickle.load(f)
         self.search_space = search_space
+        self._arch_str_to_idx = {}  # built lazily on first use
+
+    def _arch_str_to_index(self, arch_str: str) -> int:
+        """Convert a NAS-Bench-201 arch string to its HW-NAS-Bench index."""
+        if self.search_space != "nasbench201":
+            raise ValueError("_arch_str_to_index is only supported for the nasbench201 search space")
+        if bool(self._arch_str_to_idx) is False:
+            configs = self.HW_metrics["nasbench201"]["cifar10"]["config"]
+            #self._arch_str_to_idx = {cfg["arch_str"]: i for i, cfg in enumerate(configs)}
+
+            for i, cfg in enumerate(configs):
+                self._arch_str_to_idx[cfg["arch_str"]] = i
+
+        if arch_str not in self._arch_str_to_idx:
+            raise ValueError(f"arch_str not found in HW-NAS-Bench: {arch_str!r}")
+        return self._arch_str_to_idx[arch_str]
+
     def query_by_index(self, arch_index, dataname):
         if self.search_space == "nasbench201":
             metrics_list = ["edgegpu_latency",
